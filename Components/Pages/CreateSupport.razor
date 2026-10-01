@@ -1,0 +1,71 @@
+@page "/create-support"
+@rendermode InteractiveServer
+
+@using SupportWebApp.Models
+@using SupportWebApp.Services
+@inject CosmosDbService CosmosDbService
+
+<h3>Opret supporthenvendelse</h3>
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success">
+        @successMessage
+    </div>
+}
+
+<EditForm Model="@supportMessage" OnValidSubmit="@CreateSupportMessage">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label>Navn</label>
+        <InputText class="form-control" @bind-Value="supportMessage.Name" />
+    </div>
+
+    <div class="mb-3">
+        <label>Email</label>
+        <InputText class="form-control" @bind-Value="supportMessage.Email" />
+    </div>
+
+    <div class="mb-3">
+        <label>Telefon</label>
+        <InputText class="form-control" @bind-Value="supportMessage.Phone" />
+    </div>
+
+    <div class="mb-3">
+        <label>Kategori</label>
+        <InputSelect class="form-control" @bind-Value="supportMessage.Category">
+            <option value="">Vælg kategori</option>
+            <option value="Teknisk">Teknisk spørgsmål</option>
+            <option value="Reservedele">Reservedele</option>
+            <option value="Forhandler">Nærmeste forhandler</option>
+            <option value="Katalog">Katalog</option>
+            <option value="Andet">Andet</option>
+        </InputSelect>
+    </div>
+
+    <div class="mb-3">
+        <label>Beskrivelse</label>
+        <InputTextArea class="form-control"
+                       @bind-Value="supportMessage.Description" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Opret henvendelse
+    </button>
+</EditForm>
+
+@code {
+    private SupportMessage supportMessage = new();
+    private string successMessage = "";
+
+    private async Task CreateSupportMessage()
+    {
+        await CosmosDbService.AddSupportMessageAsync(supportMessage);
+
+        successMessage = "Henvendelsen er oprettet!";
+
+        supportMessage = new SupportMessage();
+    }
+}
