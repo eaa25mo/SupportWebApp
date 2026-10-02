@@ -6,7 +6,18 @@
 @inject CosmosDbService CosmosDbService
 
 <h3>Supporthenvendelser</h3>
+<p><strong>Version 2 - kategorifilter</strong></p>
+@* guide - kategorifilter *@
+<div class="mb-3">
+    <label>Vælg kategori:</label>
 
+    <select class="form-select" @onchange="CategoryChanged">
+        <option value="Alle">Alle</option>
+        <option value="Teknisk problem">Teknisk problem</option>
+        <option value="Fakturering">Fakturering</option>
+        <option value="Generel henvendelse">Generel henvendelse</option>
+    </select>
+</div>
 @if (messages == null)
 {
     <p>Indlæser...</p>
@@ -14,7 +25,9 @@
 else if (messages.Count == 0)
 {
     <p>Der er ingen supporthenvendelser.</p>
+    
 }
+
 else
 {
     <table class="table">
@@ -51,5 +64,19 @@ else
     protected override async Task OnInitializedAsync()
     {
         messages = await CosmosDbService.GetSupportMessagesAsync();
+    }
+    // guide - skifter mellem alle beskeder og en bestemt kategori
+    private async Task CategoryChanged(ChangeEventArgs e)
+    {
+        var category = e.Value?.ToString();
+
+        if (category == "Alle")
+        {
+            messages = await CosmosDbService.GetSupportMessagesAsync();
+        }
+        else if (!string.IsNullOrEmpty(category))
+        {
+            messages = await CosmosDbService.GetSupportMsgByCategoryAsync(category);
+        }
     }
 }
