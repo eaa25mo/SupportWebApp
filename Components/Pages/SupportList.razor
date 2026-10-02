@@ -6,7 +6,11 @@
 @inject CosmosDbService CosmosDbService
 
 <h3>Supporthenvendelser</h3>
-<p><strong>Version 2 - kategorifilter</strong></p>
+<p><strong>Version 3 - antal henvendelser</strong></p>
+@if (messages != null)
+{
+    <p>Antal henvendelser: @messages.Count</p>
+}
 @* guide - kategorifilter *@
 <div class="mb-3">
     <label>Vælg kategori:</label>
